@@ -1,5 +1,6 @@
 class ArticlesController < ApplicationController
   skip_before_action :verify_authenticity_token
+  before_action :set_article, only: %i[show update destroy]
   def create
     @article = Article.new(article_params)
 
@@ -11,7 +12,6 @@ class ArticlesController < ApplicationController
   end
 
   def show
-    @article = Article.find_by(slug: params[:slug])
     if @article
       render_article
     else
@@ -20,13 +20,11 @@ class ArticlesController < ApplicationController
   end
 
   def update
-    @article = Article.find_by(slug: params[:slug])
     @article.update(article_params)
     render_article
   end
 
   def destroy
-    @article = Article.find_by(slug: params[:slug])
     @article.destroy
     render_article
   end
@@ -35,6 +33,10 @@ class ArticlesController < ApplicationController
 
   def article_params
     params.require(:article).permit(:title, :description, :body)
+  end
+
+  def set_article
+    @article = Article.find_by(slug: params[:slug])
   end
 
   def render_article
